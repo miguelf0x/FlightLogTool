@@ -1,7 +1,4 @@
-﻿// FlightLogParser.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
-//
-
-#include <iomanip>
+﻿#include <iomanip>
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -13,7 +10,7 @@
 
 int n;
 int lines;
-int menuchoice;
+
 std::string native_flightlog_path;
 std::string modded_flightlog_path;
 
@@ -23,10 +20,10 @@ struct Aircraft {
 };
 
 struct Flight {
-    std::string date = "ERROR!"; // 700112
+    std::string date = "ERROR!";
     std::string departure_airport = "----";
     std::string arrival_airport = "----";
-    int landings_count = 0;
+    short unsigned int landings_count = 0;
     float total_hours = 0.0;
     float night_hours = 0.0;
     float instrument_hours = 0.0;
@@ -144,7 +141,7 @@ void input_from_file(std::vector<Flight>& Flights) {
     readlog.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     for (int i = 0; i < lines - 3; i++) {
-        std::string fldate = "", dep = "", arr = ""; // date, ICAO dep, ICAO arr
+        std::string fldate = "", dep = "", arr = "";
         int dummy, ldg_cnt = 0;
         float total_h = 0.0, night_h = 0.0, ifr_h = 0.0, cc_h = 0.0;
         std::string tail, aircraft, aircraft_man, aircraft_type;
@@ -152,7 +149,7 @@ void input_from_file(std::vector<Flight>& Flights) {
         readlog >> dummy >> fldate >> dep >> arr >> ldg_cnt >> total_h >> night_h >> ifr_h >> cc_h >> tail >> aircraft;
         char cdate[7], temp[3];
         strcpy_s(cdate, fldate.c_str());             // yymmdd
-        temp[0] = cdate[0]; temp[1] = cdate[1];     // yymmdd yy
+        temp[0] = cdate[0]; temp[1] = cdate[1];      // yymmdd yy
         cdate[0] = cdate[4]; cdate[1] = cdate[5];    // ddmmdd yy
         cdate[4] = temp[0]; cdate[5] = temp[1];
         
@@ -270,7 +267,7 @@ void write_to_file(std::vector<Flight>& Flights) {
     std::cout << "\nSave complete! (" << temp << ")\n";
 }
 
-void print_menu() {
+int main_menu() {
     std::cout << std::endl;
     std::cout << "Select action:" << std::endl;
     std::cout << "1. Print logbook" << std::endl;
@@ -280,7 +277,9 @@ void print_menu() {
     std::cout << "9. Save and exit" << std::endl;
     std::cout << "0. Exit\n" << std::endl;
     std::cout << "> ";
+    short unsigned int menuchoice = 0;
     std::cin >> menuchoice;
+    return menuchoice;
 }
 
 int main() {
@@ -291,9 +290,7 @@ int main() {
 
     do {
 
-        menuchoice = 0;
-
-        print_menu();
+        short unsigned int menuchoice = main_menu();
 
         switch (menuchoice) {
         case 1:
@@ -329,7 +326,7 @@ int main() {
             return 0;
         }
 
-    } while (menuchoice != 9);
+    } while (menuchoice < 9);
 
     return 0;
 }
