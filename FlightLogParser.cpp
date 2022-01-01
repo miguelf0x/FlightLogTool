@@ -221,7 +221,28 @@ void edit_flights(std::vector<Flight> Flights) {
     std::cout << "Enter landings count: ";
     std::cin >> Flights[line - 1].landings_count;
 
-    std::cout << std::endl << "Изменения внесены";
+    std::cout << "Enter total hours: ";
+    std::cin >> Flights[line - 1].total_hours;
+
+    std::cout << "Enter night hours: ";
+    std::cin >> Flights[line - 1].night_hours;
+        
+    std::cout << "Enter instrument hours: ";
+    std::cin >> Flights[line - 1].instrument_hours;
+
+    std::cout << "Enter cross country hours: ";
+    std::cin >> Flights[line - 1].cross_country_hours;
+
+    std::cout << "Enter tailnumber: ";
+    std::cin >> Flights[line - 1].tailnumber;
+
+    std::cout << "Enter aircraft manufacturer: ";
+    std::cin >> Flights[line - 1].aircraft_manufacturer;
+
+    std::cout << "Enter aircraft type: ";
+    std::cin >> Flights[line - 1].aircraft_type;
+
+    std::cout << std::endl << "Changes saved!";
 }
 
 void calculate_stats(std::vector<Flight>& Flights) {
@@ -241,7 +262,7 @@ void write_to_file(std::vector<Flight>& Flights) {
     fout.open(temp.c_str());
 
     for (int i = 0; i < n; i++) {
-        fout << Flights[i].date << " " << Flights[i].departure_airport << " " << Flights[i].arrival_airport << " " << Flights[i].landings_count << " " << Flights[i].total_hours << " " << Flights[i].night_hours << " " << Flights[i].instrument_hours << " " << Flights[i].cross_country_hours << " " << Flights[i].cross_country_hours << " " << Flights[i].tailnumber << " " << Flights[i].aircraft_manufacturer << " " << Flights[i].aircraft_type << std::endl;
+        fout << Flights[i].date << " " << Flights[i].departure_airport << " " << Flights[i].arrival_airport << " " << Flights[i].landings_count << " " << Flights[i].total_hours << " " << Flights[i].night_hours << " " << Flights[i].instrument_hours << " " << Flights[i].cross_country_hours << " " << Flights[i].tailnumber << " " << Flights[i].aircraft_manufacturer << " " << Flights[i].aircraft_type << std::endl;
     }
 
     fout.close();
