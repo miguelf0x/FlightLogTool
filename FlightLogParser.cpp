@@ -142,12 +142,12 @@ void input_from_file(std::vector<Flight>& Flights) {
 
     for (int i = 0; i < lines - 3; i++) {
         std::string fldate = "", dep = "", arr = "";
-        int dummy, ldg_cnt = 0;
+        short unsigned int dummy, ldg_cnt = 0;
         float total_h = 0.0, night_h = 0.0, ifr_h = 0.0, cc_h = 0.0;
         std::string tail, aircraft, aircraft_man, aircraft_type;
 
         readlog >> dummy >> fldate >> dep >> arr >> ldg_cnt >> total_h >> night_h >> ifr_h >> cc_h >> tail >> aircraft;
-        char cdate[7], temp[3];
+        char cdate[7] = "nodate", temp[3] = "00";
         strcpy_s(cdate, fldate.c_str());             // yymmdd
         temp[0] = cdate[0]; temp[1] = cdate[1];      // yymmdd yy
         cdate[0] = cdate[4]; cdate[1] = cdate[5];    // ddmmdd yy
@@ -267,7 +267,7 @@ void write_to_file(std::vector<Flight>& Flights) {
     std::cout << "\nSave complete! (" << temp << ")\n";
 }
 
-int main_menu() {
+void print_main_menu() {
     std::cout << std::endl;
     std::cout << "Select action:" << std::endl;
     std::cout << "1. Print logbook" << std::endl;
@@ -276,6 +276,9 @@ int main_menu() {
     std::cout << "8. Settings" << std::endl;
     std::cout << "9. Save and exit" << std::endl;
     std::cout << "0. Exit\n" << std::endl;
+}
+
+int choice() {
     std::cout << "> ";
     short unsigned int menuchoice = 0;
     std::cin >> menuchoice;
@@ -287,46 +290,44 @@ int main() {
     std::vector<Flight> Flights;
 
     input_from_file(Flights);
+    print_main_menu();
+    short unsigned int menuchoice = choice();
 
-    do {
-
-        short unsigned int menuchoice = main_menu();
-
+    while (menuchoice != 0) {
         switch (menuchoice) {
-        case 1:
-            system("cls");
-            std::cout << std::endl;
-            print_flights(Flights);
-            break;
+            case 1:
+                system("cls");
+                std::cout << std::endl;
+                print_flights(Flights);
+                break;
 
-        case 2:
-            system("cls");
-            std::cout << std::endl;
-            edit_flights(Flights);
-            break;
+            case 2:
+                system("cls");
+                std::cout << std::endl;
+                edit_flights(Flights);
+                break;
 
-        case 3:
-            system("cls");
-            std::cout << std::endl;
-            calculate_stats(Flights);
-            break;
+            case 3:
+                system("cls");
+                std::cout << std::endl;
+                calculate_stats(Flights);
+                break;
 
-        case 8:
-            system("cls");
-            std::cout << std::endl;
-            change_settings();
-            break;
+            case 8:
+                system("cls");
+                std::cout << std::endl;
+                change_settings();
+                break;
 
-        case 9:
-            system("cls");
-            std::cout << std::endl;
-            write_to_file(Flights);
+            case 9:
+                system("cls");
+                std::cout << std::endl;
+                write_to_file(Flights);
 
-        case 0:
-            return 0;
+            case 0:
+                return 0;
         }
-
-    } while (menuchoice < 9);
+    }
 
     return 0;
 }
