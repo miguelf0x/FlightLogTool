@@ -5,6 +5,7 @@
 #include <Windows.h>
 #include <map>
 #include <vector>
+#include <algorithm>
 
 #undef max
 
@@ -32,6 +33,8 @@ struct Flight {
     std::string aircraft_manufacturer = "";
     std::string aircraft_type = "";
 };
+
+int choice();
 
 void change_settings() {
 
@@ -81,6 +84,7 @@ Aircraft aircraft_type_and_manufacturer_resolver(std::string input) {
     mapping["29A_XP11"] = 9;
     mapping["a320neo"] = 10;
     mapping["Cessna_172SP"] = 11;
+    mapping["A350_xp11"] = 12;
 
     switch (mapping[input]) {
         case 0: return{ "Boeing", "737-200 Advanced" }; break;
@@ -95,6 +99,7 @@ Aircraft aircraft_type_and_manufacturer_resolver(std::string input) {
         case 9: return{ "Aero", "L-29" }; break;
         case 10: return{ "Airbus", "A320neo" }; break;
         case 11: return{ "Cessna", "172SP" }; break;
+        case 12: return{ "Airbus", "A350-900" }; break;
         default: return{ "Unknown", "Unknown" }; break;
     }
 
@@ -167,14 +172,15 @@ void input_from_file(std::vector<Flight>& Flights) {
 }
 
 void print_flights(std::vector<Flight>& Flights) {
-    std::cout << "Num | Flight | Dep. | Arr. |  LDG  | Total | Night |  IFR  |  C/C  |  Tail  |      Aircraft      |    Aircraft    " << std::endl;
-    std::cout << "    |  date  | ICAO | ICAO | Count | hours | hours | hours | hours | number |    manufacturer    |      type      " << std::endl;
-    std::cout << "----+--------+------+------+-------+-------+-------+-------+-------+--------+--------------------+----------------" << std::endl;
+    std::cout << " Num | Flight | Dep. | Arr. |  LDG  | Total | Night |  IFR  |  C/C  |  Tail  |      Aircraft      |    Aircraft    " << std::endl;
+    std::cout << "     |  date  | ICAO | ICAO | Count | hours | hours | hours | hours | number |    manufacturer    |      type      " << std::endl;
+    std::cout << "-----+--------+------+------+-------+-------+-------+-------+-------+--------+--------------------+----------------" << std::endl;
     for (int i = 0; i < n; i++) {
 
         std::string strnum;
-        if (i + 1 > 10) { strnum = std::to_string(i) + "."; }
-        else { strnum = "0" + std::to_string(i) + "."; };
+        if (i < 10) { strnum = "00" + std::to_string(i) + "."; }
+        else if (i < 100) { strnum = "0" + std::to_string(i) + "."; }
+        else { strnum = std::to_string(i) + "."; }
 
         std::string formatted_tailnum = Flights[i].tailnumber;
         while(formatted_tailnum.length() < 6) { formatted_tailnum += " "; };
@@ -242,8 +248,135 @@ void edit_flights(std::vector<Flight> Flights) {
     std::cout << std::endl << "Changes saved!";
 }
 
+void print_stats_menu() {
+    std::cout << "Select action:" << std::endl;
+    std::cout << "1. Calculate landings and total hours by their types" << std::endl;
+    std::cout << "2. Calculate landings and total hours by aircraft type" << std::endl;
+    std::cout << "3. Calculate landings and total hours by aircraft manufacturer" << std::endl;
+    std::cout << "9. Return to main menu\n" << std::endl;
+}
+
+
+
 void calculate_stats(std::vector<Flight>& Flights) {
-    return;
+
+    print_stats_menu();
+    short unsigned int statschoice = choice();
+    switch (statschoice) {
+        case 1:
+
+        {
+            float hours_sum = 0.0, night_hours_sum = 0.0, instrument_hours_sum = 0.0, cross_country_hours_sum = 0.0;
+            int landings = 0;
+            for (int i = 0; i < n; i++) {
+                hours_sum += Flights[i].total_hours;
+                night_hours_sum += Flights[i].night_hours;
+                instrument_hours_sum += Flights[i].instrument_hours;
+                cross_country_hours_sum += Flights[i].cross_country_hours;
+                landings += Flights[i].landings_count;
+            }
+
+            std::cout << "==============================" << std::endl;
+            std::cout << " Total hours: " << hours_sum << std::endl;
+            std::cout << " Total night hours: " << night_hours_sum << std::endl;
+            std::cout << " Total instrument hours: " << instrument_hours_sum << std::endl;
+            std::cout << " Total cross-country hours: " << cross_country_hours_sum << std::endl;
+            std::cout << " Total landings: " << landings << std::endl;
+            std::cout << "==============================" << std::endl;
+        }
+
+        break;
+
+        case 2:
+
+        {
+            std::string type;
+            std::vector<std::string> aircraft_types;
+
+            for (int i = 0; i < n; i++) {
+                type = Flights[i].aircraft_type;
+                if (std::find(aircraft_types.begin(), aircraft_types.end(), type) == aircraft_types.end())
+                    aircraft_types.push_back(type);
+            };
+
+            for(int i=0; i < aircraft_types.size(); i++){
+
+                float hours_sum = 0.0, night_hours_sum = 0.0, instrument_hours_sum = 0.0, cross_country_hours_sum = 0.0;
+                int landings = 0;
+                type = aircraft_types[i];
+
+                for (int i = 0; i < n; i++) {
+                    if (Flights[i].aircraft_type == type) {
+                        hours_sum += Flights[i].total_hours;
+                        night_hours_sum += Flights[i].night_hours;
+                        instrument_hours_sum += Flights[i].instrument_hours;
+                        cross_country_hours_sum += Flights[i].cross_country_hours;
+                        landings += Flights[i].landings_count;
+                    }
+                }
+
+                std::cout << "==============================" << std::endl;
+                std::cout << " Aircraft type: " << type << std::endl;
+                std::cout << " Total hours: " << hours_sum << std::endl;
+                std::cout << " Total night hours: " << night_hours_sum << std::endl;
+                std::cout << " Total instrument hours: " << instrument_hours_sum << std::endl;
+                std::cout << " Total cross-country hours: " << cross_country_hours_sum << std::endl;
+                std::cout << " Total landings: " << landings << std::endl;
+
+            }
+
+            std::cout << "==============================\n" << std::endl;
+
+        }
+
+        break;
+
+        case 3:
+
+        {
+            std::string manufacturer;
+            std::vector<std::string> aircraft_manufacturers;
+
+            for (int i = 0; i < n; i++) {
+                manufacturer = Flights[i].aircraft_manufacturer;
+                if (std::find(aircraft_manufacturers.begin(), aircraft_manufacturers.end(), manufacturer) == aircraft_manufacturers.end())
+                    aircraft_manufacturers.push_back(manufacturer);
+            };
+
+            for (int i = 0; i < aircraft_manufacturers.size(); i++) {
+
+                float hours_sum = 0.0, night_hours_sum = 0.0, instrument_hours_sum = 0.0, cross_country_hours_sum = 0.0;
+                int landings = 0;
+                manufacturer = aircraft_manufacturers[i];
+
+                for (int i = 0; i < n; i++) {
+                    if (Flights[i].aircraft_manufacturer == manufacturer) {
+                        hours_sum += Flights[i].total_hours;
+                        night_hours_sum += Flights[i].night_hours;
+                        instrument_hours_sum += Flights[i].instrument_hours;
+                        cross_country_hours_sum += Flights[i].cross_country_hours;
+                        landings += Flights[i].landings_count;
+                    }
+                }
+
+                std::cout << "==============================" << std::endl;
+                std::cout << " Aircraft manufacturer: " << manufacturer << std::endl;
+                std::cout << " Total hours: " << hours_sum << std::endl;
+                std::cout << " Total night hours: " << night_hours_sum << std::endl;
+                std::cout << " Total instrument hours: " << instrument_hours_sum << std::endl;
+                std::cout << " Total cross-country hours: " << cross_country_hours_sum << std::endl;
+                std::cout << " Total landings: " << landings << std::endl;
+
+            }
+
+            std::cout << "==============================\n" << std::endl;
+
+        }
+
+        break;
+
+    }
+
 }
 
 void write_to_file(std::vector<Flight>& Flights) {
@@ -290,10 +423,12 @@ int main() {
     std::vector<Flight> Flights;
 
     input_from_file(Flights);
-    print_main_menu();
-    short unsigned int menuchoice = choice();
+    short unsigned int menuchoice;
 
-    while (menuchoice != 0) {
+    do{
+        print_main_menu();
+        menuchoice = choice();
+
         switch (menuchoice) {
             case 1:
                 system("cls");
@@ -327,7 +462,7 @@ int main() {
             case 0:
                 return 0;
         }
-    }
+    } while (menuchoice != 0);
 
     return 0;
 }
